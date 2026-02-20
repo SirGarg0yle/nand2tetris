@@ -41,5 +41,35 @@ CHIP ALU {
         ng;      // if (out < 0)  equals 1, else 0
 
     PARTS:
+    // input x en y worden afhankelijk van zx/zy nul gemaakt
+    Mux16(a=x, b=b[0..15] = 0, sel=zx, out=w1x);
+    Mux16(a=y, b=b[0..15] = 0, sel=zy, out=w1y);
+
+    // input is de output van de 'nul-functie' hierboven.
+    // Principe is dat na het wel of niet nul-maken van de input, het resultaat
+    // mogelijkwel of niet 'omgedraaid' wordt: (0 wordt 1, 1 wordt 0), 
+    // afhankelijk van nx/ny.
+    Not16(in=w1x, out=nw1x);
+    Not16(in=w1y, out=nw1y);
+    
+    Mux16(a=w1x, b=nw1x, sel=nx, out=w2x);
+    Mux16(a=w1y, b=nw1y, sel=ny, out=w2y);
+
+    // Som of 'And' functies afhankelijk van 'f'-waarde
+    Add16(a=w2x, b=w2y, out=addxy);
+    And16(a=w2x, b=w2y, out=andxy);
+
+    Mux16(a=andxy, b=addxy, sel=f, out=w3);
+    
+
+    // Afhankelijk van 'no'
+    Not16(in=w3, out=notw3);
+
+    Mux16(a=w3, b=notw3, sel=no, out=out);
+    
+    
+    
+    
+    
     
 }
