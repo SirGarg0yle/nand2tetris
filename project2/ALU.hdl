@@ -42,8 +42,8 @@ CHIP ALU {
 
     PARTS:
     // input x en y worden afhankelijk van zx/zy nul gemaakt
-    Mux16(a=x, b=b[0..15] = 0, sel=zx, out=w1x);
-    Mux16(a=y, b=b[0..15] = 0, sel=zy, out=w1y);
+    Mux16(a=x, b=false, sel=zx, out=w1x);
+    Mux16(a=y, b=false, sel=zy, out=w1y);
 
     // input is de output van de 'nul-functie' hierboven.
     // Principe is dat na het wel of niet nul-maken van de input, het resultaat
@@ -61,11 +61,22 @@ CHIP ALU {
 
     Mux16(a=andxy, b=addxy, sel=f, out=w3);
     
-
     // Afhankelijk van 'no'
-    Not16(in=w3, out=notw3);
+    Not16(in=w3, out=nw3);
 
-    Mux16(a=w3, b=notw3, sel=no, out=out);
+    Mux16(a=w3, b=nw3, sel=no, out=out, out[15]=w4, out[0..7]=w5, out[8..15]=w6);
+
+    And(a=w4, b=true, out=ng);
+    
+    Or8Way(in=w5, out=w7);
+    Or8Way(in=w6, out=w8);
+
+    Not(in=w7, out=w9);
+    Not(in=w8, out=w10);
+
+    And(a=w9, b=w10, out=zr);
+    
+    
     
     
     
